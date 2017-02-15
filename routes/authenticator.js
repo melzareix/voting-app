@@ -10,14 +10,16 @@ const JWTOptions = {
 	secretOrKey: secretOrKey
 };
 
-var strategy = new JWTStrategy(JWTOptions, function(payload, done) {
+var strategy = new JWTStrategy(JWTOptions, function (payload, done) {
 	User.findOne({
 		_id: payload.id
-	}, function(err, result) {
-		if (err)
+	}, function (err, result) {
+		if (err) {
 			return done(err);
-		if (!result)
+		}
+		if (!result) {
 			return done(null, false);
+		}
 		return done(null, result);
 	});
 });

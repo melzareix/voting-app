@@ -10,18 +10,18 @@ const app = express();
 
 app.use('/api/v1', apiv1);
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
 	res.end('Hello World.');
 });
 
 /*Error handling middleware*/
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
 	res.status(500).json({
 		message: 'Internal Server Error'
 	});
 });
 
-app.use(function(req, res) {
+app.use(function (req, res) {
 	res.status(400).json({
 		message: 'Invalid or Missing Data'
 	});
@@ -29,6 +29,6 @@ app.use(function(req, res) {
 
 
 
-app.listen(port, function() {
+app.listen(port, function () {
 	console.log('Server running ....');
 });
