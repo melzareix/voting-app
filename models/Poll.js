@@ -20,7 +20,11 @@ var pollSchema = mongoose.Schema({
 			ref: 'Vote'
 		}
 	}],
-	ip: [String]
+	ip: [String],
+	createdAt: {
+		type: Date,
+		default: Date.now
+	}
 });
 
-module.exports = new mongoose.model('Poll', pollSchema);
+module.exports = mongoose.model('Poll', pollSchema);
