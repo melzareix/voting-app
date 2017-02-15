@@ -9,7 +9,8 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 app.use('/api/v1', apiv1);
-app.get('/', function(){
+
+app.get('/', function(req, res){
     res.end('Hello World.');
 });
 
