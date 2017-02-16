@@ -91,6 +91,7 @@ router.use(function (req, res, next) {
 		return next();
 	})(req, res, next);
 });
+
 router.get('/secret', function (req, res, next) {
 	//Successfully Authenticated
 	return res.json({
