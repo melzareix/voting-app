@@ -84,7 +84,9 @@ router.use(function (req, res, next) {
 			return next(err);
 		}
 		if (!user) {
-			return res.json(info);
+			return res.json({
+				message: info.toString()
+			});
 		}
 		return next();
 	})(req, res, next);

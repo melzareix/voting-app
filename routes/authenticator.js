@@ -18,9 +18,7 @@ var strategy = new JWTStrategy(JWTOptions, function (payload, done) {
 			return done(err);
 		}
 		if (!result) {
-			return done(null, false, {
-				message: 'Invalid Credentials'
-			});
+			return done(null, false, new Error('Invalid Credentials'));
 		}
 		return done(null, result);
 	});
