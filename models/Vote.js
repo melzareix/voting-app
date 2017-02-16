@@ -5,11 +5,6 @@ const voteSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    _user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -17,4 +12,4 @@ const voteSchema = mongoose.Schema({
 });
 
 
-module.exports = new mongoose.model('Vote', voteSchema);
+module.exports = mongoose.model('Vote', voteSchema);

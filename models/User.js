@@ -1,11 +1,18 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt-nodejs');
+const validator = require('validator');
 
 const userSchema = mongoose.Schema({
-    name: {
+    email: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        validate: {
+            validator: function (email) {
+                return validator.isEmail(email);
+            },
+            message: '{VALUE} is an invalid email.'
+        }
     },
     password: {
         type: String,
@@ -39,4 +46,4 @@ userSchema.methods.checkPassword = function (guess, done) {
     });
 };
 
-module.exports = new mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);
