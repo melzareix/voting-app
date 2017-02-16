@@ -76,7 +76,7 @@ router.post('/login', function (req, res, next) {
 	});
 });
 
-router.use('/secret', passport.authenticate('jwt', {
+router.use(passport.authenticate('jwt', {
 	session: false
 }));
 router.get('/secret', function (req, res, next) {
