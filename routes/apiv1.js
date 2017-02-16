@@ -76,9 +76,19 @@ router.post('/login', function (req, res, next) {
 	});
 });
 
-router.use(passport.authenticate('jwt', {
-	session: false
-}));
+router.use(function (req, res, next) {
+	passport.authenticate('jwt', {
+		session: false
+	}, function (err, user, info) {
+		if (err) {
+			return next(err);
+		}
+		if (!user) {
+			return res.json(info);
+		}
+		return next();
+	})(req, res, next);
+});
 router.get('/secret', function (req, res, next) {
 	//Successfully Authenticated
 	return res.json({
