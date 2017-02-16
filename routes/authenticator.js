@@ -13,14 +13,23 @@ const JWTOptions = {
 var strategy = new JWTStrategy(JWTOptions, function (payload, done) {
 	User.findOne({
 		_id: payload.id
-	}, function (err, result) {
+	}, function (err, user) {
 		if (err) {
 			return done(err);
 		}
-		if (!result) {
-			return done(null, false, new Error('Invalid Credentials'));
+		if (!user) {
+			return done(null, false, new Error('Invalid Credentials.'));
 		}
-		return done(null, result);
+
+		const tokenCreationTime = new Date(parseInt(payload.iat) * 1000)
+		const lastPasswordChangeTime = user.passwordChangeDate;
+
+		// User changed password after generating token.
+		if (tokenCreationTime.getTime() < lastPasswordChangeTime.getTime()) {
+			return done(null, false, new Error('Invalid Token.'));
+		}
+
+		return done(null, user);
 	});
 });
 
