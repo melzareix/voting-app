@@ -88,6 +88,7 @@ router.use(function (req, res, next) {
 				message: info.toString()
 			});
 		}
+		req.user = user;
 		return next();
 	})(req, res, next);
 });
