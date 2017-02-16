@@ -15,9 +15,6 @@ mongoose.connect(DB_URL);
 
 passport.use(authenticator);
 
-router.use(bodyParser.urlencoded({
-	extended: true
-}));
 router.use(bodyParser.json());
 router.use(passport.initialize());
 
