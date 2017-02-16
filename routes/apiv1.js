@@ -48,7 +48,7 @@ router.post('/login', function (req, res, next) {
 	if (!email || !password)
 		return next();
 	User.findOne({
-		email: email
+		email
 	}, function (err, result) {
 		if (err) {
 			return next(err);

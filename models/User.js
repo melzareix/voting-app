@@ -6,7 +6,13 @@ const userSchema = mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        validate: {
+            validator: function (email) {
+                return validator.isEmail(email);
+            },
+            message: '{VALUE} is an invalid email.'
+        }
     },
     password: {
         type: String,
@@ -20,10 +26,6 @@ const userSchema = mongoose.Schema({
 
 userSchema.pre('save', function (done) {
     var user = this;
-
-    if (!validator.isEmail(user.email)) {
-        return done(new Error('Invalid Email'));
-    }
 
     if (!user.isModified('password')) {
         return done();

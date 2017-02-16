@@ -14,6 +14,13 @@ app.get('/', function (req, res) {
 	res.end('Hello World.');
 });
 
+//TODO : Pass new Error to next()
+app.use(function (err, req, res, next) {
+	return res.status(500).json({
+		message: err.toString()
+	});
+});
+
 app.listen(port, function () {
 	console.log('Server running ....');
 });
