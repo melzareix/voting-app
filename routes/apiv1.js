@@ -22,33 +22,33 @@ router.use(bodyParser.json());
 router.use(passport.initialize());
 
 router.post('/signup', function (req, res, next) {
-	var username = req.body.username,
+	let email = req.body.email,
 		password = req.body.password;
-	if (!username || !password) {
+	if (!email || !password) {
 		return next();
 	}
-	var user = new User({
-		name: username,
+	let user = new User({
+		email: email,
 		password: password
 	});
 	user.save(function (err) {
-		//Has Duplicate then Error
+		//Has Duplicate OR Invalid Email
 		if (err) {
 			return next(err);
 		}
-		res.json({
+		return res.json({
 			message: 'Signed Up Successfully'
 		});
 	});
 });
 
 router.post('/login', function (req, res, next) {
-	var username = req.body.username,
+	let email = req.body.email,
 		password = req.body.password;
-	if (!username || !password)
+	if (!email || !password)
 		return next();
 	User.findOne({
-		name: username
+		email: email
 	}, function (err, result) {
 		if (err) {
 			return next(err);
@@ -64,10 +64,10 @@ router.post('/login', function (req, res, next) {
 			if (!match) {
 				return next();
 			}
-			var token = jwt.sign({
+			let token = jwt.sign({
 				id: result._id
 			}, secretOrKey);
-			res.json({
+			return res.json({
 				message: 'Login Successfully',
 				token: token
 			});
@@ -76,12 +76,26 @@ router.post('/login', function (req, res, next) {
 	});
 });
 
-router.get('/secret', passport.authenticate('jwt', {
+router.use('/secret', passport.authenticate('jwt', {
 	session: false
-}), function (req, res, next) {
+}));
+router.get('/secret', function (req, res, next) {
 	//Successfully Authenticated
-	res.json({
+	return res.json({
 		message: 'Success'
+	});
+});
+
+//TODO : Pass new Error to next()
+router.use(function (err, req, res, next) {
+	return res.status(500).json({
+		message: err.toString()
+	});
+});
+
+router.use(function (req, res) {
+	return res.status(400).json({
+		message: 'Invalid or Missing Data'
 	});
 });
 
