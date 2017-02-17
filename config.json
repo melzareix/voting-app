@@ -1,0 +1,5 @@
+{
+	"secretOrKey": "f3ceepwCXDzeWU89uDZX",
+	"DB_URL": "mongodb://localhost:27017/voting_app",
+	"SEND_GRID": "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"
+}

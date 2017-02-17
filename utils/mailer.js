@@ -1,9 +1,9 @@
 const nodemailer = require('nodemailer');
 const sgTransport = require('nodemailer-sendgrid-transport');
-
+const config = require('../config.json')
 const options = {
     auth: {
-        api_key: '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'
+        api_key: config.SEND_GRID
     }
 }
 
