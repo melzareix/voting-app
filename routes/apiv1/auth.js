@@ -183,6 +183,30 @@ router.post('/reset/:token', function (req, res, next) {
 	});
 });
 
+
+/**
+ * Logout Route.
+ * http://stackoverflow.com/questions/3521290/logout-get-or-post
+ */
+router.post('/logout', authHelper.authMiddleware, function (req, res, next) {
+	const jwtToken = authHelper.parseAuthHeader(req.headers['authorization']).value;
+	new InvalidToken({
+		token: jwtToken
+	}).save(function (err) {
+		if (err) {
+			return next(err);
+		}
+		return res.json({
+			message: 'Logged out successfully.'
+		});
+	});
+});
+
+
+/**
+ * Authenticated Users Routes.
+ */
+
 /**
  * User Change Password Route.
  */
@@ -221,36 +245,6 @@ router.post('/reset_password', authHelper.authMiddleware, function (req, res, ne
 	});
 
 });
-
-/**
- * Authenticated Users Routes.
- */
-
-router.get('/secret', authHelper.authMiddleware, function (req, res, next) {
-	//Successfully Authenticated
-	return res.json({
-		message: 'Success'
-	});
-});
-
-/**
- * Logout Route.
- * http://stackoverflow.com/questions/3521290/logout-get-or-post
- */
-router.post('/logout', authHelper.authMiddleware, function (req, res, next) {
-	const jwtToken = authHelper.parseAuthHeader(req.headers['authorization']).value;
-	new InvalidToken({
-		token: jwtToken
-	}).save(function (err) {
-		if (err) {
-			return next(err);
-		}
-		return res.json({
-			message: 'Logged out successfully.'
-		});
-	});
-});
-
 
 /**
  * Error Handling Middlewares.
