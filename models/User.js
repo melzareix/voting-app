@@ -18,10 +18,7 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    passwordResetToken: {
-        type: String
-    },
-    passwordResetTokenExpiry: {
+    passwordResetTokenDate: {
         type: Date
     },
     passwordChangeDate: {

@@ -70,9 +70,13 @@ router.post('/login', function (req, res, next) {
 			if (!match) {
 				return next();
 			}
+
 			let token = jwt.sign({
 				id: result._id
-			}, secretOrKey);
+			}, secretOrKey, {
+				expiresIn: '10d'
+			});
+
 			return res.json({
 				message: 'Login Successfully',
 				token: token
@@ -88,9 +92,13 @@ router.post('/login', function (req, res, next) {
 
 router.post('/forgot', function (req, res, next) {
 	const email = req.body.email;
+	const iat = Math.floor(Date.now() / 1000);
 	const resetToken = jwt.sign({
-		email
-	}, secretOrKey);
+		email,
+		iat
+	}, secretOrKey, {
+		expiresIn: '1h'
+	});
 
 	User.findOne({
 		email
@@ -104,9 +112,7 @@ router.post('/forgot', function (req, res, next) {
 			 password, if the email exists.'));
 		}
 
-		user.passwordResetToken = resetToken;
-		user.passwordResetTokenExpiry = Date.now() + 3600000; // 1 hour
-
+		user.passwordResetTokenDate = iat * 1000;
 
 		user.save(function (err) {
 			if (err) {
@@ -129,7 +135,52 @@ router.post('/forgot', function (req, res, next) {
  */
 
 router.post('/reset/:token', function (req, res, next) {
+	const resetToken = req.params.token;
 
+	const password = req.body.password;
+	const verPassword = req.body.verPassword;
+
+	if (!(password && verPassword) || password !== verPassword) {
+		return next(new Error('Password verification mismatch.'));
+	}
+
+	jwt.verify(resetToken, secretOrKey, function (err, payload) {
+		if (err) {
+			return next(err);
+		}
+
+		const email = payload.email;
+		const creationDate = new Date(parseInt(payload.iat) * 1000);
+
+		User.findOne({
+			email,
+			passwordResetTokenDate: {
+				$lte: creationDate
+			}
+		}, function (err, user) {
+			if (err) {
+				return next(err);
+			}
+
+			if (!user) {
+				return next(new Error('Invalid reset token.'));
+			}
+
+			user.passwordResetTokenDate = undefined; // Disable the token
+			user.passwordChangeDate = Date.now(); // Invalidate Login Tokens
+			user.password = password; // Reset password
+
+			user.save(function (err) {
+				if (err) {
+					return next(err);
+				}
+
+				return res.json({
+					message: 'Password Changed Successfully.'
+				});
+			});
+		})
+	});
 });
 
 /**
