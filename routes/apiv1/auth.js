@@ -8,6 +8,8 @@ const User = require('../../models/User');
 const InvalidToken = require('../../models/InvalidToken');
 const config = require('../../config.json');
 const authHelper = require('../../middlewares/authHelper');
+const mailer = require('../../utils/mailer');
+
 const router = express.Router();
 
 const secretOrKey = config.secretOrKey;
@@ -81,6 +83,56 @@ router.post('/login', function (req, res, next) {
 });
 
 /**
+ * User Forget Password Route.
+ */
+
+router.post('/forgot', function (req, res, next) {
+	const email = req.body.email;
+	const resetToken = jwt.sign({
+		email
+	}, secretOrKey);
+
+	User.findOne({
+		email
+	}, function (err, user) {
+		if (err) {
+			return next(err);
+		}
+
+		if (!user) { // User not found, Invalid mail
+			return next(new Error('You should recieve an email to reset your\
+			 password, if the email exists.'));
+		}
+
+		user.passwordResetToken = resetToken;
+		user.passwordResetTokenExpiry = Date.now() + 3600000; // 1 hour
+
+
+		user.save(function (err) {
+			if (err) {
+				return next(err);
+			}
+
+			// Send mail
+			mailer.forgotPassword(email, req.headers.host, resetToken, function (err, result) {
+				res.json({
+					message: 'You should recieve an email to reset your password, if the email exists.'
+				});
+			});
+		});
+
+	});
+});
+
+/**
+ * User Reset Password Route.
+ */
+
+router.post('/reset/:token', function (req, res, next) {
+
+});
+
+/**
  * Authenticated Users Routes.
  */
 
@@ -108,6 +160,7 @@ router.post('/logout', authHelper.authMiddleware, function (req, res, next) {
 		});
 	});
 });
+
 
 /**
  * Error Handling Middlewares.
