@@ -5,6 +5,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt-nodejs');
 const User = require('../../models/User');
+const InvalidToken = require('../../models/InvalidToken');
 const config = require('../../config.json');
 const authHelper = require('../../middlewares/authHelper');
 const router = express.Router();
@@ -90,6 +91,23 @@ router.get('/secret', authHelper.authMiddleware, function (req, res, next) {
 	});
 });
 
+/**
+ * Logout Route.
+ * http://stackoverflow.com/questions/3521290/logout-get-or-post
+ */
+router.post('/logout', authHelper.authMiddleware, function (req, res, next) {
+	const jwtToken = authHelper.parseAuthHeader(req.headers['authorization']).value;
+	new InvalidToken({
+		token: jwtToken
+	}).save(function (err) {
+		if (err) {
+			return next(err);
+		}
+		return res.json({
+			message: 'Logged out successfully.'
+		});
+	});
+});
 
 /**
  * Error Handling Middlewares.

@@ -91,5 +91,6 @@ var authMiddleware = function (req, res, next) {
 
 module.exports = {
 	strategy,
-	authMiddleware
+	authMiddleware,
+	parseAuthHeader
 };
