@@ -4,19 +4,21 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt-nodejs');
-const User = require('../models/User');
-const config = require('../config.json');
-const authenticator = require('./authenticator');
+const User = require('../../models/User');
+const config = require('../../config.json');
+const authHelper = require('../../middlewares/authHelper');
 const router = express.Router();
 
 const secretOrKey = config.secretOrKey;
 const DB_URL = config.DB_URL;
 mongoose.connect(DB_URL);
 
-passport.use(authenticator);
 
 router.use(bodyParser.json());
-router.use(passport.initialize());
+
+/**
+ * User Signup Route.
+ */
 
 router.post('/signup', function (req, res, next) {
 	let email = req.body.email,
@@ -38,6 +40,10 @@ router.post('/signup', function (req, res, next) {
 		});
 	});
 });
+
+/**
+ * User Login Route.
+ */
 
 router.post('/login', function (req, res, next) {
 	let email = req.body.email,
@@ -73,29 +79,21 @@ router.post('/login', function (req, res, next) {
 	});
 });
 
-router.use(function (req, res, next) {
-	passport.authenticate('jwt', {
-		session: false
-	}, function (err, user, info) {
-		if (err) {
-			return next(err);
-		}
-		if (!user) {
-			return res.json({
-				message: info.toString()
-			});
-		}
-		req.user = user;
-		return next();
-	})(req, res, next);
-});
+/**
+ * Authenticated Users Routes.
+ */
 
-router.get('/secret', function (req, res, next) {
+router.get('/secret', authHelper.authMiddleware, function (req, res, next) {
 	//Successfully Authenticated
 	return res.json({
 		message: 'Success'
 	});
 });
+
+
+/**
+ * Error Handling Middlewares.
+ */
 
 //TODO : Pass new Error to next()
 router.use(function (err, req, res, next) {

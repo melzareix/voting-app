@@ -1,3 +1,4 @@
+const passport = require('passport');
 const passportJWT = require('passport-jwt');
 const ExtractJWT = passportJWT.ExtractJwt;
 const JWTStrategy = passportJWT.Strategy;
@@ -11,6 +12,10 @@ const JWTOptions = {
 	secretOrKey: secretOrKey,
 	passReqToCallback: true
 };
+
+/**
+ * Authentication Strategy.
+ */
 
 var strategy = new JWTStrategy(JWTOptions, function (req, payload, done) {
 	User.findOne({
@@ -63,4 +68,28 @@ var parseAuthHeader = function (hdrValue) {
 	};
 }
 
-module.exports = strategy;
+/**
+ * Middleware for JWT authentication validation.
+ */
+
+var authMiddleware = function (req, res, next) {
+	passport.authenticate('jwt', {
+		session: false
+	}, function (err, user, info) {
+		if (err) {
+			return next(err);
+		}
+		if (!user) {
+			return res.json({
+				message: info.toString()
+			});
+		}
+		req.user = user;
+		return next();
+	})(req, res, next);
+};
+
+module.exports = {
+	strategy,
+	authMiddleware
+};
