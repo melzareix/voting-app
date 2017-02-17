@@ -87,7 +87,7 @@ router.post('/login', function (req, res, next) {
 });
 
 /**
- * User Forget Password Route.
+ * User Forgot Password Route.
  */
 
 router.post('/forgot', function (req, res, next) {
@@ -181,6 +181,45 @@ router.post('/reset/:token', function (req, res, next) {
 			});
 		})
 	});
+});
+
+/**
+ * User Change Password Route.
+ */
+router.post('/reset_password', authHelper.authMiddleware, function (req, res, next) {
+
+	const password = req.body.password;
+	const verPassword = req.body.verPassword;
+
+	if (!(password && verPassword) || password !== verPassword) {
+		return next(new Error('Password verification mismatch.'));
+	}
+
+	User.findOne({
+		_id: req.user.id
+	}, function (err, user) {
+		if (err) {
+			return next(err);
+		}
+
+		if (!user) { // Should not happen
+			return next(new Error('Invalid User.'));
+		}
+
+		user.password = password;
+		user.passwordChangeDate = Date.now();
+
+		user.save(function (err) {
+			if (err) {
+				return next(err);
+			}
+
+			return res.json({
+				message: 'Password Changed Successfully.'
+			});
+		});
+	});
+
 });
 
 /**
