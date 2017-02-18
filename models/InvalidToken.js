@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-var invalidTokenSchema = mongoose.Schema({
+let invalidTokenSchema = mongoose.Schema({
     token: {
         type: String,
         required: true,

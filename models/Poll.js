@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-var pollSchema = mongoose.Schema({
+let pollSchema = mongoose.Schema({
 	title: String,
 	options: [{
 		type: mongoose.Schema.Types.ObjectId,
