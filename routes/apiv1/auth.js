@@ -121,7 +121,7 @@ router.post('/forgot', function (req, res, next) {
 
 			// Send mail
 			mailer.forgotPassword(email, req.headers.host, resetToken, function (err, result) {
-				res.json({
+				return res.json({
 					message: 'You should recieve an email to reset your password, if the email exists.'
 				});
 			});
