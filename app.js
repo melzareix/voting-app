@@ -3,16 +3,35 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const passport = require('passport');
-const apiv1 = require('./routes/apiv1');
+
+const authHelper = require('./middlewares/authHelper');
+const authRoutes = require('./routes/apiv1/auth');
 
 const port = process.env.PORT || 3000;
 const app = express();
 
-app.use('/api/v1', apiv1);
+passport.use(authHelper.strategy);
+app.use(passport.initialize());
+
+
+/**
+ * API ROUTES
+ */
+
+app.use('/api/v1/auth', authRoutes);
+
+
+/**
+ * NON-API Routes.
+ */
 
 app.get('/', function (req, res) {
 	res.end('Hello World.');
 });
+
+/**
+ * Error Handling Middlewares.
+ */
 
 //TODO : Pass new Error to next()
 app.use(function (err, req, res, next) {

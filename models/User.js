@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt-nodejs');
 const validator = require('validator');
 
-const userSchema = mongoose.Schema({
+let userSchema = mongoose.Schema({
     email: {
         type: String,
         required: true,
@@ -17,6 +17,13 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    passwordResetTokenDate: {
+        type: Date
+    },
+    passwordChangeDate: {
+        type: Date,
+        default: Date.now
     },
     createdAt: {
         type: Date,

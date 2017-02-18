@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const voteSchema = mongoose.Schema({
+let voteSchema = mongoose.Schema({
     title: {
         type: String,
         required: true
