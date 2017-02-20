@@ -7,6 +7,8 @@ const passport = require('passport');
 const authHelper = require('./middlewares/authHelper');
 const authRoutes = require('./routes/apiv1/auth');
 
+const pollRoutes = require('./routes/apiv1/poll');
+
 const port = process.env.PORT || 3000;
 const app = express();
 
@@ -19,7 +21,7 @@ app.use(passport.initialize());
  */
 
 app.use('/api/v1/auth', authRoutes);
-
+app.use('/api/v1/poll', pollRoutes);
 
 /**
  * NON-API Routes.
